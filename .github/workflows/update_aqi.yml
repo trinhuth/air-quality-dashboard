@@ -1,0 +1,33 @@
+name: Daily Air Quality Update
+
+on:
+  schedule:
+    - cron: '0 16 * * *'  # Every day at 10 AM Mountain Time
+  workflow_dispatch:  # Allow manual runs too
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install requests pandas
+
+      - name: Run update script
+        env:
+          ARC_USERNAME: ${{ secrets.ARC_USERNAME }}
+          ARC_PASSWORD: ${{ secrets.ARC_PASSWORD }}
+          AIR_API_KEY: ${{ secrets.AIR_API_KEY }}
+          FEATURE_LAYER_ID: ${{ secrets.FEATURE_LAYER_ID }}
+          ORG_ID: ${{ secrets.ORG_ID }}
+        run: |
+          python air
